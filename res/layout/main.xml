@@ -17,5 +17,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Send Test Email/Text" />
+    
+    <Button
+        android:id="@+id/settings_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/settings" />
 
 </LinearLayout>

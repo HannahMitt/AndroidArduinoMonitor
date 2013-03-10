@@ -1,4 +1,4 @@
-package com.hannah.arduinomotiondetector;
+package com.hannah.arduinomotiondetector.activity;
 
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
@@ -20,9 +20,11 @@ import android.os.ParcelFileDescriptor;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.TextView;
 
+import com.hannah.arduinomotiondetector.NotificationPreferences;
+import com.hannah.arduinomotiondetector.R;
+import com.hannah.arduinomotiondetector.ValueMsg;
 import com.hannah.arduinomotiondetector.tasks.ArduinoReaderRunnable;
 import com.hannah.arduinomotiondetector.tasks.SendNotificationTask;
 
@@ -32,7 +34,6 @@ public class ArduinoReceiveDataActivity extends Activity {
 	private static final String TAG = "ArduinoReceiver";
 
 	private TextView mResponseField;
-	private Button mSendEmailButton;
 
 	private UsbManager mUsbManager;
 	private PendingIntent mPermissionIntent;
@@ -58,6 +59,10 @@ public class ArduinoReceiveDataActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+		
+		if(!NotificationPreferences.hasPrefences(this)){
+			startActivity(new Intent(this, SettingsActivity.class));
+		}
 
 		setUpUIElements();
 		setupAccessory();
@@ -65,14 +70,21 @@ public class ArduinoReceiveDataActivity extends Activity {
 
 	private void setUpUIElements() {
 		mResponseField = (TextView) findViewById(R.id.arduinoresponse);
-		mSendEmailButton = (Button) findViewById(R.id.send_email_button);
 
-		mSendEmailButton.setOnClickListener(new OnClickListener() {
+		findViewById(R.id.send_email_button).setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View arg0) {
 				Log.d("SendMail", "Button pressed");
 				new SendNotificationTask(ArduinoReceiveDataActivity.this).execute();
+			}
+		});
+		
+		findViewById(R.id.settings_button).setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				startActivity(new Intent(ArduinoReceiveDataActivity.this, SettingsActivity.class));
 			}
 		});
 	}
