@@ -13,6 +13,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.hannah.arduinomotiondetector.GMailSender;
+import com.hannah.arduinomotiondetector.NotificationPreferences;
 
 public class SendNotificationTask extends AsyncTask<Void, Void, Void> {
 
@@ -29,12 +30,12 @@ public class SendNotificationTask extends AsyncTask<Void, Void, Void> {
 	protected Void doInBackground(Void... arg0) {
 		try {
 			GMailSender sender = new GMailSender(SENDER_EMAIL, SENDER_PASSWORD);
-			sender.sendMail("Arduino Alert!", "New alert at " + Calendar.getInstance().getTime(), SENDER_EMAIL, "hannahmittel@gmail.com");
+			sender.sendMail("Arduino Alert!", "New alert at " + Calendar.getInstance().getTime(), SENDER_EMAIL, NotificationPreferences.getEmail(mActivity));
 		} catch (Exception e) {
 			Log.e("SendMail", e.getMessage(), e);
 		}
 
-		sendSMS(mActivity, "16479289563", "Alert for message 50");
+		sendSMS(mActivity, NotificationPreferences.getPhone(mActivity), "Alert for message 50");
 		
 		return null;
 	}
