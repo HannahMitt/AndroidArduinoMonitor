@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -21,7 +22,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.hannah.arduinomotiondetector.LocationFinder;
 import com.hannah.arduinomotiondetector.NotificationPreferences;
 import com.hannah.arduinomotiondetector.R;
 import com.hannah.arduinomotiondetector.ValueMsg;
@@ -60,8 +63,8 @@ public class ArduinoReceiveDataActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		
-		if(!NotificationPreferences.hasPrefences(this)){
+
+		if (!NotificationPreferences.hasPrefences(this)) {
 			startActivity(new Intent(this, SettingsActivity.class));
 		}
 
@@ -80,7 +83,7 @@ public class ArduinoReceiveDataActivity extends Activity {
 				new SendNotificationTask(ArduinoReceiveDataActivity.this).execute();
 			}
 		});
-		
+
 		findViewById(R.id.settings_button).setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -88,12 +91,17 @@ public class ArduinoReceiveDataActivity extends Activity {
 				startActivity(new Intent(ArduinoReceiveDataActivity.this, SettingsActivity.class));
 			}
 		});
-		
+
 		findViewById(R.id.location_button).setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View arg0) {
-				new WebSender().execute("Bahen Center, Toronto");
+				Location l = LocationFinder.getLocation(ArduinoReceiveDataActivity.this);
+				if (l != null) {
+					new WebSender().execute("Location: " + l.getLatitude() + ", " + l.getLongitude());
+				} else {
+					Toast.makeText(ArduinoReceiveDataActivity.this, "Could not get location.", Toast.LENGTH_LONG).show();
+				}
 			}
 		});
 	}
