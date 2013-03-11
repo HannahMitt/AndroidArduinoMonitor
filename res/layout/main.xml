@@ -6,19 +6,19 @@
     android:orientation="vertical"
     android:padding="10dp" >
 
-    <TextView 
+    <TextView
         android:id="@+id/sensor_name"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Sensor 1"
-        android:textSize="26sp"/>
-    
+        android:textSize="26sp" />
+
     <TextView
         android:id="@+id/arduinoresponse"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Data from Arduino board will be displayed here" 
-        android:layout_marginTop="15dp"/>
+        android:layout_marginTop="15dp"
+        android:text="Data from Arduino board will be displayed here" />
 
     <Button
         android:id="@+id/send_email_button"
@@ -31,5 +31,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/find_location" />
+
+    <fragment
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.MapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </LinearLayout>
