@@ -25,6 +25,9 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.UiSettings;
 import com.hannah.arduinomotiondetector.LocationFinder;
 import com.hannah.arduinomotiondetector.NotificationPreferences;
 import com.hannah.arduinomotiondetector.R;
@@ -102,6 +105,11 @@ public class ArduinoReceiveDataActivity extends Activity {
 				}
 			}
 		});
+		
+		GoogleMap map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+		map.setMyLocationEnabled(true);
+		UiSettings mapSettings = map.getUiSettings();
+		mapSettings.setMyLocationButtonEnabled(true);
 	}
 
 	@Override
