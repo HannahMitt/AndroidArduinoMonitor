@@ -28,6 +28,7 @@ public class WebSender extends AsyncTask<String, Void, Void> {
 				// where you issue the commands
 				out.println("Hey Server, from Android!");
 				out.println(arg0[0]);
+				out.println(arg0[1]);
 				out.flush();
 				out.close();
 				Log.d(TAG, "C: Sent.");

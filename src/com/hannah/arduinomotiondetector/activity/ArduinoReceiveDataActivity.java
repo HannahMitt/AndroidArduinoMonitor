@@ -19,6 +19,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
@@ -84,14 +85,6 @@ public class ArduinoReceiveDataActivity extends Activity {
 			}
 		});
 
-		findViewById(R.id.settings_button).setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View arg0) {
-				startActivity(new Intent(ArduinoReceiveDataActivity.this, SettingsActivity.class));
-			}
-		});
-
 		findViewById(R.id.location_button).setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -99,7 +92,7 @@ public class ArduinoReceiveDataActivity extends Activity {
 				Location l = LocationFinder.getLocation(ArduinoReceiveDataActivity.this);
 				if (l != null) {
 					NotificationPreferences.saveLocation(ArduinoReceiveDataActivity.this, l);
-					new WebSender().execute("Location: " + l.getLatitude() + ", " + l.getLongitude());
+					new WebSender().execute(NotificationPreferences.getSensorName(ArduinoReceiveDataActivity.this), l.getLatitude() + ", " + l.getLongitude());
 				} else {
 					Toast.makeText(ArduinoReceiveDataActivity.this, "Could not get location.", Toast.LENGTH_LONG).show();
 				}
@@ -211,4 +204,16 @@ public class ArduinoReceiveDataActivity extends Activity {
 			}
 		}
 	};
+
+	public boolean onCreateOptionsMenu(android.view.Menu menu) {
+		android.view.MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, (android.view.Menu) menu);
+        return super.onCreateOptionsMenu(menu);
+	};
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		startActivity(new Intent(ArduinoReceiveDataActivity.this, SettingsActivity.class));
+		return super.onOptionsItemSelected(item);
+	}
 }
