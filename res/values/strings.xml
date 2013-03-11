@@ -9,5 +9,6 @@
     <string name="alert_email">Alert Email:</string>
     <string name="hint_email">youremail@email.com</string>
     <string name="settings">Settings</string>
+    <string name="find_location">Find My Location!</string>
 
 </resources>

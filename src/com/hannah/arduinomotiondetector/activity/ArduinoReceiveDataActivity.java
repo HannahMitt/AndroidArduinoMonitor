@@ -25,6 +25,7 @@ import android.widget.TextView;
 import com.hannah.arduinomotiondetector.NotificationPreferences;
 import com.hannah.arduinomotiondetector.R;
 import com.hannah.arduinomotiondetector.ValueMsg;
+import com.hannah.arduinomotiondetector.WebSender;
 import com.hannah.arduinomotiondetector.tasks.ArduinoReaderRunnable;
 import com.hannah.arduinomotiondetector.tasks.SendNotificationTask;
 
@@ -85,6 +86,14 @@ public class ArduinoReceiveDataActivity extends Activity {
 			@Override
 			public void onClick(View arg0) {
 				startActivity(new Intent(ArduinoReceiveDataActivity.this, SettingsActivity.class));
+			}
+		});
+		
+		findViewById(R.id.location_button).setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				new WebSender().execute("Bahen Center, Toronto");
 			}
 		});
 	}
