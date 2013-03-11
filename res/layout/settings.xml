@@ -8,7 +8,20 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/alert_email" />
+        android:text="@string/sensor_name" />
+
+    <EditText
+        android:id="@+id/sensor_name_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Sensor 1"
+        android:inputType="textCapWords" />
+    
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/alert_email" 
+        android:layout_marginTop="10dp"/>
 
     <EditText
         android:id="@+id/email_edit_text"

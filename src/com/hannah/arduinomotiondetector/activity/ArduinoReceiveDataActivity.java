@@ -98,6 +98,7 @@ public class ArduinoReceiveDataActivity extends Activity {
 			public void onClick(View arg0) {
 				Location l = LocationFinder.getLocation(ArduinoReceiveDataActivity.this);
 				if (l != null) {
+					NotificationPreferences.saveLocation(ArduinoReceiveDataActivity.this, l);
 					new WebSender().execute("Location: " + l.getLatitude() + ", " + l.getLongitude());
 				} else {
 					Toast.makeText(ArduinoReceiveDataActivity.this, "Could not get location.", Toast.LENGTH_LONG).show();

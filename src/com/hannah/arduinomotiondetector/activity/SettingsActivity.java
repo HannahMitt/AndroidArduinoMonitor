@@ -17,10 +17,12 @@ public class SettingsActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.settings);
 		
+		final EditText nameText = (EditText)findViewById(R.id.sensor_name_edit_text);
 		final EditText emailText = (EditText)findViewById(R.id.email_edit_text);
 		final EditText phoneText = (EditText)findViewById(R.id.phone_number_edit_text);
 		
 		if(NotificationPreferences.hasPrefences(this)){
+			nameText.setText(NotificationPreferences.getSensorName(this));
 			emailText.setText(NotificationPreferences.getEmail(this));
 			phoneText.setText(NotificationPreferences.getPhone(this));
 		}
@@ -30,8 +32,10 @@ public class SettingsActivity extends Activity {
 			
 			@Override
 			public void onClick(View arg0) {
+				String name = nameText.getText().toString();
 				String email = emailText.getText().toString();
 				String phone = phoneText.getText().toString();
+				NotificationPreferences.saveSensorName(SettingsActivity.this, name);
 				NotificationPreferences.saveEmail(SettingsActivity.this, email);
 				NotificationPreferences.savePhone(SettingsActivity.this, phone);
 				SettingsActivity.this.finish();
