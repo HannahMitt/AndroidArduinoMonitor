@@ -2,15 +2,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
+    android:gravity="center_horizontal"
     android:orientation="vertical"
     android:padding="10dp" >
 
+    <TextView 
+        android:id="@+id/sensor_name"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Sensor 1"
+        android:textSize="26sp"/>
+    
     <TextView
         android:id="@+id/arduinoresponse"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Data from Arduino board will be displayed here" />
+        android:text="Data from Arduino board will be displayed here" 
+        android:layout_marginTop="15dp"/>
 
     <Button
         android:id="@+id/send_email_button"

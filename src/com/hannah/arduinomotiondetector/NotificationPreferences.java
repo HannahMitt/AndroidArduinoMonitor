@@ -19,6 +19,11 @@ public class NotificationPreferences {
 		return preferences.contains(EMAIL_PREF) && preferences.contains(PHONE_PREF) && preferences.contains(NAME_PREF);
 	}
 	
+	public static boolean hasSensorName(Context context){
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+		return preferences.contains(NAME_PREF);
+	}
+	
 	public static void saveSensorName(Context context, String name){
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
 		Editor editor = preferences.edit();

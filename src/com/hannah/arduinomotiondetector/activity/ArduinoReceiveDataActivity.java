@@ -74,6 +74,10 @@ public class ArduinoReceiveDataActivity extends Activity {
 	}
 
 	private void setUpUIElements() {
+		if(NotificationPreferences.hasSensorName(this)){
+			((TextView) findViewById(R.id.sensor_name)).setText(NotificationPreferences.getSensorName(this));
+		}
+		
 		mResponseField = (TextView) findViewById(R.id.arduinoresponse);
 
 		findViewById(R.id.send_email_button).setOnClickListener(new OnClickListener() {
