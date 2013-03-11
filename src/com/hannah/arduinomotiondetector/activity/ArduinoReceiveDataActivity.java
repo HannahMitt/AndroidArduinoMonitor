@@ -77,9 +77,7 @@ public class ArduinoReceiveDataActivity extends Activity {
 	}
 
 	private void setUpUIElements() {
-		if(NotificationPreferences.hasSensorName(this)){
-			((TextView) findViewById(R.id.sensor_name)).setText(NotificationPreferences.getSensorName(this));
-		}
+		setSensorNameTitle();
 		
 		mResponseField = (TextView) findViewById(R.id.arduinoresponse);
 
@@ -112,6 +110,12 @@ public class ArduinoReceiveDataActivity extends Activity {
 		mapSettings.setMyLocationButtonEnabled(true);
 	}
 
+	private void setSensorNameTitle(){
+		if(NotificationPreferences.hasSensorName(this)){
+			((TextView) findViewById(R.id.sensor_name)).setText(NotificationPreferences.getSensorName(this));
+		}
+	}
+	
 	@Override
 	public Object onRetainNonConfigurationInstance() {
 		if (mAccessory != null) {
@@ -124,6 +128,7 @@ public class ArduinoReceiveDataActivity extends Activity {
 	@Override
 	public void onResume() {
 		super.onResume();
+		setSensorNameTitle();
 
 		if (mInputStream != null) {
 			Log.e(TAG, "input stream was null on resume");
