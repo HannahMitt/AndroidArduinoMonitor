@@ -2,33 +2,40 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center_horizontal"
     android:orientation="vertical"
     android:padding="10dp" >
 
-    <TextView
-        android:id="@+id/sensor_name"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="Sensor 1"
-        android:textSize="26sp" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:orientation="vertical" >
 
-    <TextView
-        android:id="@+id/arduinoresponse"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:text="Data from Arduino board will be displayed here" />
+        <TextView
+            android:id="@+id/sensor_name"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Sensor 1"
+            android:textSize="26sp" />
 
-    <Button
-        android:id="@+id/send_email_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Send Test Email/Text" />
+        <TextView
+            android:id="@+id/arduinoresponse"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="Data from Arduino board will be displayed here" />
+
+        <Button
+            android:id="@+id/send_email_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Send Test Email/Text" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/location_button"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/find_location" />
 
@@ -36,6 +43,6 @@
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.MapFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="200dp" />
 
 </LinearLayout>
