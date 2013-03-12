@@ -1,5 +1,7 @@
 package com.hannah.arduinomotiondetector;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -24,6 +26,11 @@ public class NotificationPreferences {
 		return preferences.contains(NAME_PREF);
 	}
 	
+	public static boolean hasLocation(Context context){
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+		return preferences.contains(LAT_PREF) && preferences.contains(LONG_PREF);
+	}
+	
 	public static void saveSensorName(Context context, String name){
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
 		Editor editor = preferences.edit();
@@ -45,11 +52,11 @@ public class NotificationPreferences {
 		editor.commit();
 	}
 	
-	public static void saveLocation(Context context, Location location){
+	public static void saveLocation(Context context, LatLng location){
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
 		Editor editor = preferences.edit();
-		editor.putFloat(LAT_PREF, (float) location.getLatitude());
-		editor.putFloat(LONG_PREF, (float) location.getLongitude());
+		editor.putFloat(LAT_PREF, (float) location.latitude);
+		editor.putFloat(LONG_PREF, (float) location.longitude);
 		editor.commit();
 	}
 	
@@ -68,11 +75,9 @@ public class NotificationPreferences {
 		return preferences.getString(PHONE_PREF, "");
 	}
 	
-	public static Location getLocation(Context context){
+	public static LatLng getLocation(Context context){
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-		Location location = new Location(NotificationPreferences.class.getSimpleName());
-		location.setLatitude(preferences.getFloat(LAT_PREF, 0));
-		location.setLongitude(preferences.getFloat(LONG_PREF, 0));
+		LatLng location = new LatLng(preferences.getFloat(LAT_PREF, 0), preferences.getFloat(LONG_PREF, 0));
 		
 		return location;
 	}

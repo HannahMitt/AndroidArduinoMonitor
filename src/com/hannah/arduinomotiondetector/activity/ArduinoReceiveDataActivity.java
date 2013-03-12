@@ -22,17 +22,21 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.hannah.arduinomotiondetector.LocationFinder;
 import com.hannah.arduinomotiondetector.NotificationPreferences;
 import com.hannah.arduinomotiondetector.R;
 import com.hannah.arduinomotiondetector.ValueMsg;
-import com.hannah.arduinomotiondetector.WebSender;
 import com.hannah.arduinomotiondetector.tasks.ArduinoReaderRunnable;
 import com.hannah.arduinomotiondetector.tasks.SendNotificationTask;
 
@@ -49,6 +53,7 @@ public class ArduinoReceiveDataActivity extends Activity {
 	private UsbAccessory mAccessory;
 	private ParcelFileDescriptor mFileDescriptor;
 	private FileInputStream mInputStream;
+	private Marker mLocationMarker;
 
 	private Handler mHandler = new Handler() {
 		@Override
@@ -78,7 +83,7 @@ public class ArduinoReceiveDataActivity extends Activity {
 
 	private void setUpUIElements() {
 		setSensorNameTitle();
-		
+
 		mResponseField = (TextView) findViewById(R.id.arduinoresponse);
 
 		findViewById(R.id.send_email_button).setOnClickListener(new OnClickListener() {
@@ -96,26 +101,71 @@ public class ArduinoReceiveDataActivity extends Activity {
 			public void onClick(View arg0) {
 				Location l = LocationFinder.getLocation(ArduinoReceiveDataActivity.this);
 				if (l != null) {
-					NotificationPreferences.saveLocation(ArduinoReceiveDataActivity.this, l);
-					new WebSender().execute(NotificationPreferences.getSensorName(ArduinoReceiveDataActivity.this), l.getLatitude() + ", " + l.getLongitude());
+					NotificationPreferences.saveLocation(ArduinoReceiveDataActivity.this, new LatLng(l.getLatitude(), l.getLongitude()));
+					updateMapMarker();
+					// new
+					// WebSender().execute(NotificationPreferences.getSensorName(ArduinoReceiveDataActivity.this),
+					// l.getLatitude() + ", " + l.getLongitude());
 				} else {
 					Toast.makeText(ArduinoReceiveDataActivity.this, "Could not get location.", Toast.LENGTH_LONG).show();
 				}
 			}
 		});
-		
-		GoogleMap map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
-		map.setMyLocationEnabled(true);
-		UiSettings mapSettings = map.getUiSettings();
-		mapSettings.setMyLocationButtonEnabled(true);
+
+		setUpMap();
 	}
 
-	private void setSensorNameTitle(){
-		if(NotificationPreferences.hasSensorName(this)){
+	private void setUpMap() {
+		GoogleMap map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+
+		UiSettings mapSettings = map.getUiSettings();
+		mapSettings.setZoomControlsEnabled(false);
+		mapSettings.setScrollGesturesEnabled(false);
+
+		/*
+		 * mapSettings.setMyLocationButtonEnabled(true);
+		 * map.setMyLocationEnabled(true); map.setOnMyLocationChangeListener(new
+		 * OnMyLocationChangeListener() {
+		 * 
+		 * @Override public void onMyLocationChange(Location arg0) { LatLng ll =
+		 * new LatLng(arg0.getLatitude(), arg0.getLongitude());
+		 * NotificationPreferences.saveLocation(ArduinoReceiveDataActivity.this,
+		 * ll); } });
+		 */
+
+		updateMapMarker();
+	}
+
+	private void updateMapMarker() {
+		final GoogleMap map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+		final View mapView = getFragmentManager().findFragmentById(R.id.map).getView();
+
+		if (mLocationMarker != null) {
+			mLocationMarker.remove();
+		}
+
+		if (NotificationPreferences.hasLocation(this)) {
+			final LatLng ll = NotificationPreferences.getLocation(this);
+			mLocationMarker = map.addMarker(new MarkerOptions().position(NotificationPreferences.getLocation(this)));
+
+			if (mapView.getViewTreeObserver().isAlive()) {
+				mapView.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+					@Override
+					public void onGlobalLayout() {
+						mapView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+						map.moveCamera(CameraUpdateFactory.newLatLngZoom(ll, 17));
+					}
+				});
+			}
+		}
+	}
+
+	private void setSensorNameTitle() {
+		if (NotificationPreferences.hasSensorName(this)) {
 			((TextView) findViewById(R.id.sensor_name)).setText(NotificationPreferences.getSensorName(this));
 		}
 	}
-	
+
 	@Override
 	public Object onRetainNonConfigurationInstance() {
 		if (mAccessory != null) {
@@ -224,13 +274,14 @@ public class ArduinoReceiveDataActivity extends Activity {
 
 	public boolean onCreateOptionsMenu(android.view.Menu menu) {
 		android.view.MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu, (android.view.Menu) menu);
-        return super.onCreateOptionsMenu(menu);
+		inflater.inflate(R.menu.menu, (android.view.Menu) menu);
+		return super.onCreateOptionsMenu(menu);
 	};
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		startActivity(new Intent(ArduinoReceiveDataActivity.this, SettingsActivity.class));
 		return super.onOptionsItemSelected(item);
 	}
+
 }
