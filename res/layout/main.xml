@@ -24,7 +24,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
-            android:text="Data from Arduino board will be displayed here" />
+            android:text="@string/arduino_connection_message" />
 
         <Button
             android:id="@+id/send_email_button"

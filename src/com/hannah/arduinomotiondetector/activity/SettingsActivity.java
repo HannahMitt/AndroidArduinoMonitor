@@ -9,6 +9,7 @@ import android.widget.EditText;
 
 import com.hannah.arduinomotiondetector.NotificationPreferences;
 import com.hannah.arduinomotiondetector.R;
+import com.hannah.arduinomotiondetector.WebSender;
 
 public class SettingsActivity extends Activity {
 
@@ -38,6 +39,9 @@ public class SettingsActivity extends Activity {
 				NotificationPreferences.saveSensorName(SettingsActivity.this, name);
 				NotificationPreferences.saveEmail(SettingsActivity.this, email);
 				NotificationPreferences.savePhone(SettingsActivity.this, phone);
+				
+				new WebSender().execute(NotificationPreferences.getSensorName(SettingsActivity.this),"hi");
+				
 				SettingsActivity.this.finish();
 			}
 		});

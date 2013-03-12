@@ -103,9 +103,6 @@ public class ArduinoReceiveDataActivity extends Activity {
 				if (l != null) {
 					NotificationPreferences.saveLocation(ArduinoReceiveDataActivity.this, new LatLng(l.getLatitude(), l.getLongitude()));
 					updateMapMarker();
-					// new
-					// WebSender().execute(NotificationPreferences.getSensorName(ArduinoReceiveDataActivity.this),
-					// l.getLatitude() + ", " + l.getLongitude());
 				} else {
 					Toast.makeText(ArduinoReceiveDataActivity.this, "Could not get location.", Toast.LENGTH_LONG).show();
 				}
