@@ -122,17 +122,6 @@ public class ArduinoReceiveDataActivity extends Activity {
 		mapSettings.setZoomControlsEnabled(false);
 		mapSettings.setScrollGesturesEnabled(false);
 
-		/*
-		 * mapSettings.setMyLocationButtonEnabled(true);
-		 * map.setMyLocationEnabled(true); map.setOnMyLocationChangeListener(new
-		 * OnMyLocationChangeListener() {
-		 * 
-		 * @Override public void onMyLocationChange(Location arg0) { LatLng ll =
-		 * new LatLng(arg0.getLatitude(), arg0.getLongitude());
-		 * NotificationPreferences.saveLocation(ArduinoReceiveDataActivity.this,
-		 * ll); } });
-		 */
-
 		updateMapMarker();
 	}
 
@@ -147,6 +136,7 @@ public class ArduinoReceiveDataActivity extends Activity {
 		if (NotificationPreferences.hasLocation(this)) {
 			final LatLng ll = NotificationPreferences.getLocation(this);
 			mLocationMarker = map.addMarker(new MarkerOptions().position(NotificationPreferences.getLocation(this)));
+			map.moveCamera(CameraUpdateFactory.newLatLngZoom(ll, 17));
 
 			if (mapView.getViewTreeObserver().isAlive()) {
 				mapView.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
