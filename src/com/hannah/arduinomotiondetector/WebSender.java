@@ -18,17 +18,17 @@ public class WebSender extends AsyncTask<String, Void, Void> {
 
 	@Override
 	protected Void doInBackground(String... arg0) {
+		Log.d(TAG, "Message: " + arg0[0]);
 		try {
 			InetAddress serverAddr = InetAddress.getByName(SERVER_IP);
 			Log.d(TAG, "C: Connecting to " + SERVER_IP + "...");
 			Socket socket = new Socket(serverAddr, PORT);
 			try {
-				Log.d(TAG, "C: Sending command. " + arg0[0]);
+				Log.d(TAG, "C: Sending: " + arg0[0]);
 				PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
 				// where you issue the commands
 				out.println("Hey Server, from Android!");
 				out.println(arg0[0]);
-				out.println(arg0[1]);
 				out.flush();
 				out.close();
 				Log.d(TAG, "C: Sent.");
