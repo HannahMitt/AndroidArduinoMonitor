@@ -24,6 +24,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.hannah.arduinomotiondetector.NotificationPreferences;
 import com.hannah.arduinomotiondetector.R;
 import com.hannah.arduinomotiondetector.WebSender;
@@ -65,6 +66,8 @@ public class SettingsActivity extends Activity {
 	}
 
 	private String getXMLMessage(String name, String email, String phone) {
+		LatLng ll = NotificationPreferences.getLocation(this);
+		
 		try {
 			DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
@@ -74,6 +77,8 @@ public class SettingsActivity extends Activity {
 			rootElement.setAttribute("name", name);
 			rootElement.setAttribute("email", email);
 			rootElement.setAttribute("phone", phone);
+			rootElement.setAttribute("latitude", ll.latitude + "");
+			rootElement.setAttribute("longitude", ll.longitude + "");
 			document.appendChild(rootElement);
 
 			TransformerFactory factory = TransformerFactory.newInstance();
