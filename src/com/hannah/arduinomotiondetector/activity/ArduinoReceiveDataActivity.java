@@ -108,6 +108,14 @@ public class ArduinoReceiveDataActivity extends Activity {
 				}
 			}
 		});
+		
+		findViewById(R.id.picture_button).setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				startActivity(new Intent(ArduinoReceiveDataActivity.this, CameraActivity.class));
+			}
+		});
 
 		setUpMap();
 	}
