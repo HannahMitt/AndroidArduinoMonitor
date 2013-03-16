@@ -12,6 +12,8 @@ import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.hannah.arduinomotiondetector.tasks.SendNotificationTask;
+
 public class PhotoHandler implements PictureCallback {
 
 	private final Context context;
@@ -46,6 +48,7 @@ public class PhotoHandler implements PictureCallback {
 			fos.write(data);
 			fos.close();
 			Toast.makeText(context, "New Image saved:" + filename, Toast.LENGTH_LONG).show();
+			new SendNotificationTask(context).execute(pictureFile);
 		} catch (Exception error) {
 			Log.d("PhotoHandler", "File" + filename + "not saved: " + error.getMessage());
 			Toast.makeText(context, "Image could not be saved.", Toast.LENGTH_LONG).show();

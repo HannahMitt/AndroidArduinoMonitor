@@ -1,6 +1,7 @@
 package com.hannah.arduinomotiondetector;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -14,7 +15,9 @@ import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 
 public class GMailSender extends javax.mail.Authenticator {
 	private String mailhost = "smtp.gmail.com";
@@ -48,11 +51,25 @@ public class GMailSender extends javax.mail.Authenticator {
 	}
 
 	public synchronized void sendMail(String subject, String body, String sender, String recipients) throws Exception {
+		sendMail(subject, body, null, sender, recipients);
+	}
+
+	public synchronized void sendMail(String subject, String body, File file, String sender, String recipients) throws Exception {
 		MimeMessage message = new MimeMessage(session);
 		DataHandler handler = new DataHandler(new ByteArrayDataSource(body.getBytes(), "text/plain"));
 		message.setSender(new InternetAddress(sender));
 		message.setSubject(subject);
 		message.setDataHandler(handler);
+
+		if (file != null) {
+			MimeBodyPart messagePart = new MimeBodyPart();
+			messagePart.attachFile(file);
+
+			MimeMultipart multipart = new MimeMultipart("mixed");
+			multipart.addBodyPart(messagePart);
+			message.setContent(multipart);
+		}
+
 		if (recipients.indexOf(',') > 0)
 			message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipients));
 		else
