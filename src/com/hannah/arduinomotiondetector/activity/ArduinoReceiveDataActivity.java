@@ -11,6 +11,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.SurfaceTexture;
+import android.hardware.Camera;
 import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbManager;
 import android.location.Location;
@@ -33,6 +35,7 @@ import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.hannah.arduinomotiondetector.CameraUtility;
 import com.hannah.arduinomotiondetector.LocationFinder;
 import com.hannah.arduinomotiondetector.NotificationPreferences;
 import com.hannah.arduinomotiondetector.R;
@@ -42,18 +45,30 @@ import com.hannah.arduinomotiondetector.tasks.SendNotificationTask;
 
 public class ArduinoReceiveDataActivity extends Activity {
 
-	private static final String ACTION_USB_PERMISSION = "com.google.android.DemoKit.action.USB_PERMISSION";
 	private static final String TAG = "ArduinoReceiver";
 
-	private TextView mResponseField;
+	//
+	// Map variables
+	//
+	private Marker mLocationMarker;
 
+	//
+	// Camera variables
+	//
+	private Camera camera;
+	private SurfaceTexture surfaceTexture;
+
+	//
+	// USB accessory variables
+	//
+	private static final String ACTION_USB_PERMISSION = "com.google.android.DemoKit.action.USB_PERMISSION";
+	private TextView mResponseField;
 	private UsbManager mUsbManager;
 	private PendingIntent mPermissionIntent;
 	private boolean mPermissionRequestPending;
 	private UsbAccessory mAccessory;
 	private ParcelFileDescriptor mFileDescriptor;
 	private FileInputStream mInputStream;
-	private Marker mLocationMarker;
 
 	private Handler mHandler = new Handler() {
 		@Override
@@ -66,26 +81,49 @@ public class ArduinoReceiveDataActivity extends Activity {
 			}
 		}
 	};
+	
+	private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String action = intent.getAction();
+			if (ACTION_USB_PERMISSION.equals(action)) {
+				synchronized (this) {
+					UsbAccessory accessory = (UsbAccessory) intent.getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
+					if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+						openAccessory(accessory);
+					} else {
+						// USB permission denied
+					}
+				}
+			} else if (UsbManager.ACTION_USB_ACCESSORY_DETACHED.equals(action)) {
+				UsbAccessory accessory = (UsbAccessory) intent.getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
+				if (accessory != null && accessory.equals(mAccessory)) {
+					// accessory detached
+					closeAccessory();
+				}
+			}
+		}
+	};
 
-	/** Called when the activity is first created. */
+	//
+	// Life Cycle methods
+	//
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
+		// Prompt the user to set their settings the first time
 		if (!NotificationPreferences.hasPrefences(this)) {
 			startActivity(new Intent(this, SettingsActivity.class));
 		}
 
-		setUpUIElements();
+		setUpCamera();
+		setUpMap();
 		setupAccessory();
-	}
-
-	private void setUpUIElements() {
-		setSensorNameTitle();
 
 		mResponseField = (TextView) findViewById(R.id.arduinoresponse);
-
 		findViewById(R.id.send_email_button).setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -94,6 +132,77 @@ public class ArduinoReceiveDataActivity extends Activity {
 				new SendNotificationTask(ArduinoReceiveDataActivity.this).execute();
 			}
 		});
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		setSensorNameTitle();
+		attachToAccessory();
+	}
+
+	@Override
+	protected void onPause() {
+		if (camera != null) {
+			camera.release();
+			camera = null;
+		}
+		super.onPause();
+	}
+
+	@Override
+	public void onDestroy() {
+		unregisterReceiver(mUsbReceiver);
+		super.onDestroy();
+	}
+
+	//
+	// Set the name of the sensor
+	//
+	private void setSensorNameTitle() {
+		if (NotificationPreferences.hasSensorName(this)) {
+			((TextView) findViewById(R.id.sensor_name)).setText(NotificationPreferences.getSensorName(this));
+		}
+	}
+
+	//
+	// Set up the Camera to take a programmatic picture
+	//
+	private void setUpCamera() {
+		surfaceTexture = new SurfaceTexture(0);
+		camera = CameraUtility.getCamera(this);
+
+		if (camera != null) {
+			try {
+				camera.setPreviewTexture(surfaceTexture);
+				camera.startPreview();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			findViewById(R.id.picture_button).setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View arg0) {
+					CameraUtility.takePicture(camera, ArduinoReceiveDataActivity.this);
+				}
+			});
+		} else {
+			findViewById(R.id.picture_button).setVisibility(View.GONE);
+		}
+	}
+
+	//
+	// Map methods
+	//
+	private void setUpMap() {
+		GoogleMap map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+
+		UiSettings mapSettings = map.getUiSettings();
+		mapSettings.setZoomControlsEnabled(false);
+		mapSettings.setScrollGesturesEnabled(false);
+
+		updateMapMarker();
 
 		findViewById(R.id.location_button).setOnClickListener(new OnClickListener() {
 
@@ -108,26 +217,6 @@ public class ArduinoReceiveDataActivity extends Activity {
 				}
 			}
 		});
-		
-		findViewById(R.id.picture_button).setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View arg0) {
-				startActivity(new Intent(ArduinoReceiveDataActivity.this, CameraActivity.class));
-			}
-		});
-
-		setUpMap();
-	}
-
-	private void setUpMap() {
-		GoogleMap map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
-
-		UiSettings mapSettings = map.getUiSettings();
-		mapSettings.setZoomControlsEnabled(false);
-		mapSettings.setScrollGesturesEnabled(false);
-
-		updateMapMarker();
 	}
 
 	private void updateMapMarker() {
@@ -155,55 +244,10 @@ public class ArduinoReceiveDataActivity extends Activity {
 		}
 	}
 
-	private void setSensorNameTitle() {
-		if (NotificationPreferences.hasSensorName(this)) {
-			((TextView) findViewById(R.id.sensor_name)).setText(NotificationPreferences.getSensorName(this));
-		}
-	}
-
-	@Override
-	public Object onRetainNonConfigurationInstance() {
-		if (mAccessory != null) {
-			return mAccessory;
-		} else {
-			return super.onRetainNonConfigurationInstance();
-		}
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-		setSensorNameTitle();
-
-		if (mInputStream != null) {
-			Log.e(TAG, "input stream was null on resume");
-			return;
-		}
-
-		UsbAccessory[] accessories = mUsbManager.getAccessoryList();
-		UsbAccessory accessory = (accessories == null ? null : accessories[0]);
-		if (accessory != null) {
-			if (mUsbManager.hasPermission(accessory)) {
-				openAccessory(accessory);
-			} else {
-				synchronized (mUsbReceiver) {
-					if (!mPermissionRequestPending) {
-						mUsbManager.requestPermission(accessory, mPermissionIntent);
-						mPermissionRequestPending = true;
-					}
-				}
-			}
-		} else {
-			Log.e(TAG, "null accessory");
-		}
-	}
-
-	@Override
-	public void onDestroy() {
-		unregisterReceiver(mUsbReceiver);
-		super.onDestroy();
-	}
-
+	//
+	// Accessory methods
+	//
+	
 	private void setupAccessory() {
 		mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
 		mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
@@ -244,29 +288,42 @@ public class ArduinoReceiveDataActivity extends Activity {
 		}
 	}
 
-	private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			String action = intent.getAction();
-			if (ACTION_USB_PERMISSION.equals(action)) {
-				synchronized (this) {
-					UsbAccessory accessory = (UsbAccessory) intent.getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
-					if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-						openAccessory(accessory);
-					} else {
-						// USB permission denied
+	private void attachToAccessory() {
+		if (mInputStream != null) {
+			Log.e(TAG, "input stream was null on resume");
+			return;
+		}
+
+		UsbAccessory[] accessories = mUsbManager.getAccessoryList();
+		UsbAccessory accessory = (accessories == null ? null : accessories[0]);
+		if (accessory != null) {
+			if (mUsbManager.hasPermission(accessory)) {
+				openAccessory(accessory);
+			} else {
+				synchronized (mUsbReceiver) {
+					if (!mPermissionRequestPending) {
+						mUsbManager.requestPermission(accessory, mPermissionIntent);
+						mPermissionRequestPending = true;
 					}
 				}
-			} else if (UsbManager.ACTION_USB_ACCESSORY_DETACHED.equals(action)) {
-				UsbAccessory accessory = (UsbAccessory) intent.getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
-				if (accessory != null && accessory.equals(mAccessory)) {
-					// accessory detached
-					closeAccessory();
-				}
 			}
+		} else {
+			Log.e(TAG, "null accessory");
 		}
-	};
+	}
 
+	@Override
+	public Object onRetainNonConfigurationInstance() {
+		if (mAccessory != null) {
+			return mAccessory;
+		} else {
+			return super.onRetainNonConfigurationInstance();
+		}
+	}
+
+	//
+	// Options menu
+	//
 	public boolean onCreateOptionsMenu(android.view.Menu menu) {
 		android.view.MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.menu, (android.view.Menu) menu);
