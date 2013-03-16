@@ -34,6 +34,13 @@
             android:layout_marginTop="15dp"
             android:text="@string/arduino_connection_message"
             android:textSize="16sp" />
+        
+        <Button 
+            android:id="@+id/ringtone_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/stop_alarm"
+            android:visibility="gone"/>
     </LinearLayout>
 
     <Button

@@ -28,16 +28,20 @@ public class SendNotificationTask extends AsyncTask<File, Void, Void> {
 
 	@Override
 	protected Void doInBackground(File... arg0) {
-		File file = arg0.length > 0 ? arg0[0] : null;
+		if (NotificationPreferences.getEmailOn(mContext)) {
+			File file = arg0.length > 0 ? arg0[0] : null;
 
-		try {
-			GMailSender sender = new GMailSender(SENDER_EMAIL, SENDER_PASSWORD);
-			sender.sendMail("Arduino Alert!", "New alert at " + Calendar.getInstance().getTime(), file, SENDER_EMAIL, NotificationPreferences.getEmail(mContext));
-		} catch (Exception e) {
-			Log.e("SendMail", e.getMessage(), e);
+			try {
+				GMailSender sender = new GMailSender(SENDER_EMAIL, SENDER_PASSWORD);
+				sender.sendMail("Arduino Alert!", "New alert at " + Calendar.getInstance().getTime(), file, SENDER_EMAIL, NotificationPreferences.getEmail(mContext));
+			} catch (Exception e) {
+				Log.e("SendMail", e.getMessage(), e);
+			}
 		}
 
-		sendSMS(mContext, NotificationPreferences.getPhone(mContext), "Arduino Motion Alert at " + Calendar.getInstance().getTime());
+		if (NotificationPreferences.getSMSOn(mContext)) {
+			sendSMS(mContext, NotificationPreferences.getPhone(mContext), "Arduino Motion Alert at " + Calendar.getInstance().getTime());
+		}
 
 		return null;
 	}

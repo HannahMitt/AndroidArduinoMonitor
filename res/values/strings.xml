@@ -15,5 +15,6 @@
     <string name="on_alert_">On Alert:</string>
     <string name="send_email">Send Email</string>
     <string name="take_photo">Take Photo</string>
+    <string name="stop_alarm">STOP ALARM</string>
 
 </resources>

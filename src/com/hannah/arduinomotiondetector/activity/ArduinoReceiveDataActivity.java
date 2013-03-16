@@ -17,6 +17,9 @@ import android.hardware.Camera;
 import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbManager;
 import android.location.Location;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -70,6 +73,7 @@ public class ArduinoReceiveDataActivity extends Activity {
 	private ParcelFileDescriptor mFileDescriptor;
 	private FileInputStream mInputStream;
 	private Handler mHandler;
+	private Ringtone mRingtone;
 
 	private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
 		@Override
@@ -248,7 +252,11 @@ public class ArduinoReceiveDataActivity extends Activity {
 	private void setUpAccessoryHandler() {
 		final TextView responseField = (TextView) findViewById(R.id.arduinoresponse);
 		final TextView timeField = (TextView) findViewById(R.id.time);
+		final View ringtoneButton = findViewById(R.id.ringtone_button);
 
+		Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+		mRingtone = RingtoneManager.getRingtone(getApplicationContext(), notification);
+		
 		mHandler = new Handler() {
 			@Override
 			public void handleMessage(Message msg) {
@@ -257,6 +265,11 @@ public class ArduinoReceiveDataActivity extends Activity {
 				if (t.getReading() == 0) {
 					responseField.setText("ALERT!");
 					responseField.setTextColor(Color.RED);
+
+					if (NotificationPreferences.getAlarmOn(ArduinoReceiveDataActivity.this)) {
+						mRingtone.play();
+						ringtoneButton.setVisibility(View.VISIBLE);
+					}
 
 					if (NotificationPreferences.getPhotoOn(ArduinoReceiveDataActivity.this)) {
 						CameraUtility.takePicture(camera, ArduinoReceiveDataActivity.this);
@@ -271,6 +284,15 @@ public class ArduinoReceiveDataActivity extends Activity {
 				timeField.setText(new Date().toString());
 			}
 		};
+		
+		ringtoneButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				mRingtone.stop();
+				ringtoneButton.setVisibility(View.GONE);
+			}
+		});
 	}
 
 	private void closeAccessory() {
