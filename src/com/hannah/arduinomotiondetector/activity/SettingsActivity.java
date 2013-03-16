@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -39,11 +40,19 @@ public class SettingsActivity extends Activity {
 		final EditText nameText = (EditText) findViewById(R.id.sensor_name_edit_text);
 		final EditText emailText = (EditText) findViewById(R.id.email_edit_text);
 		final EditText phoneText = (EditText) findViewById(R.id.phone_number_edit_text);
+		final CheckBox emailOn = (CheckBox) findViewById(R.id.email_on);
+		final CheckBox photoOn = (CheckBox) findViewById(R.id.photo_on);
+		final CheckBox smsOn = (CheckBox) findViewById(R.id.sms_on);
+		final CheckBox alarmOn = (CheckBox) findViewById(R.id.alarm_on);
 
 		if (NotificationPreferences.hasPrefences(this)) {
 			nameText.setText(NotificationPreferences.getSensorName(this));
 			emailText.setText(NotificationPreferences.getEmail(this));
 			phoneText.setText(NotificationPreferences.getPhone(this));
+			emailOn.setChecked(NotificationPreferences.getEmailOn(this));
+			photoOn.setChecked(NotificationPreferences.getPhotoOn(this));
+			smsOn.setChecked(NotificationPreferences.getSMSOn(this));
+			alarmOn.setChecked(NotificationPreferences.getAlarmOn(this));
 		}
 
 		Button saveButton = (Button) findViewById(R.id.save_button);
@@ -57,6 +66,7 @@ public class SettingsActivity extends Activity {
 				NotificationPreferences.saveSensorName(SettingsActivity.this, name);
 				NotificationPreferences.saveEmail(SettingsActivity.this, email);
 				NotificationPreferences.savePhone(SettingsActivity.this, phone);
+				NotificationPreferences.saveAlertsOn(SettingsActivity.this, emailOn.isChecked(), photoOn.isChecked(), smsOn.isChecked(), alarmOn.isChecked());
 
 				new WebSender().execute(getXMLMessage(name, email, phone));
 
@@ -67,7 +77,7 @@ public class SettingsActivity extends Activity {
 
 	private String getXMLMessage(String name, String email, String phone) {
 		LatLng ll = NotificationPreferences.getLocation(this);
-		
+
 		try {
 			DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();

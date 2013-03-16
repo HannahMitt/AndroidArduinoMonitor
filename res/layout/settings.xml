@@ -2,8 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" 
-    android:padding="10dp">
+    android:orientation="vertical"
+    android:padding="10dp" >
 
     <TextView
         android:layout_width="match_parent"
@@ -16,12 +16,12 @@
         android:layout_height="wrap_content"
         android:hint="Sensor 1"
         android:inputType="textCapWords" />
-    
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/alert_email" 
-        android:layout_marginTop="10dp"/>
+        android:layout_marginTop="10dp"
+        android:text="@string/alert_email" />
 
     <EditText
         android:id="@+id/email_edit_text"
@@ -33,8 +33,8 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/alert_texts_phone_number" 
-        android:layout_marginTop="10dp"/>
+        android:layout_marginTop="10dp"
+        android:text="@string/alert_texts_phone_number" />
 
     <EditText
         android:id="@+id/phone_number_edit_text"
@@ -43,12 +43,58 @@
         android:hint="@string/hint_phone"
         android:inputType="phone" />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/on_alert_" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <CheckBox
+            android:id="@+id/email_on"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/send_email" />
+
+        <CheckBox
+            android:id="@+id/photo_on"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/take_photo" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <CheckBox
+            android:id="@+id/sms_on"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Send SMS" />
+
+        <CheckBox
+            android:id="@+id/alarm_on"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Sound Alarm" />
+    </LinearLayout>
+
     <Button
         android:id="@+id/save_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/save" 
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="10dp"/>
+        android:layout_marginTop="10dp"
+        android:text="@string/save" />
 
 </LinearLayout>

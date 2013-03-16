@@ -12,5 +12,8 @@
     <string name="find_location">Find Me</string>
     <string name="sensor_name">Sensor Name:</string>
     <string name="arduino_connection_message">Connect hardware to start monitoring.</string>
+    <string name="on_alert_">On Alert:</string>
+    <string name="send_email">Send Email</string>
+    <string name="take_photo">Take Photo</string>
 
 </resources>
