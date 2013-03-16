@@ -24,19 +24,9 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
-            android:text="@string/arduino_connection_message" />
-
-        <Button
-            android:id="@+id/send_email_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Send Test Email/Text" />
-        
-        <Button
-            android:id="@+id/picture_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Take Picture" />
+            android:text="@string/arduino_connection_message"
+            android:textSize="16sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <Button

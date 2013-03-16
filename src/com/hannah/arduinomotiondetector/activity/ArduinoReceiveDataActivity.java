@@ -11,6 +11,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.hardware.usb.UsbAccessory;
@@ -69,19 +70,8 @@ public class ArduinoReceiveDataActivity extends Activity {
 	private UsbAccessory mAccessory;
 	private ParcelFileDescriptor mFileDescriptor;
 	private FileInputStream mInputStream;
+	private Handler mHandler;
 
-	private Handler mHandler = new Handler() {
-		@Override
-		public void handleMessage(Message msg) {
-			ValueMsg t = (ValueMsg) msg.obj;
-			mResponseField.setText("Flag: " + t.getFlag() + "; Reading: " + t.getReading() + "; Date: " + (new Date().toString()));
-
-			if (t.getReading() == 50) {
-				new SendNotificationTask(ArduinoReceiveDataActivity.this).execute();
-			}
-		}
-	};
-	
 	private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -108,7 +98,7 @@ public class ArduinoReceiveDataActivity extends Activity {
 	//
 	// Life Cycle methods
 	//
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -124,14 +114,27 @@ public class ArduinoReceiveDataActivity extends Activity {
 		setupAccessory();
 
 		mResponseField = (TextView) findViewById(R.id.arduinoresponse);
-		findViewById(R.id.send_email_button).setOnClickListener(new OnClickListener() {
-
+		mHandler = new Handler() {
 			@Override
-			public void onClick(View arg0) {
-				Log.d("SendMail", "Button pressed");
-				new SendNotificationTask(ArduinoReceiveDataActivity.this).execute();
+			public void handleMessage(Message msg) {
+				ValueMsg t = (ValueMsg) msg.obj;
+
+				if (t.getReading() == 0) {
+					mResponseField.setText("ALERT! at " + (new Date().toString()));
+					mResponseField.setTextColor(Color.RED);
+
+					if (NotificationPreferences.getPhotoOn(ArduinoReceiveDataActivity.this)) {
+						CameraUtility.takePicture(camera, ArduinoReceiveDataActivity.this);
+					} else {
+						new SendNotificationTask(ArduinoReceiveDataActivity.this).execute();
+					}
+				} else {
+					mResponseField.setText("Status normal at " + (new Date().toString()));
+					mResponseField.setTextColor(Color.LTGRAY);
+				}
 			}
-		});
+		};
+		
 	}
 
 	@Override
@@ -179,16 +182,6 @@ public class ArduinoReceiveDataActivity extends Activity {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-
-			findViewById(R.id.picture_button).setOnClickListener(new OnClickListener() {
-
-				@Override
-				public void onClick(View arg0) {
-					CameraUtility.takePicture(camera, ArduinoReceiveDataActivity.this);
-				}
-			});
-		} else {
-			findViewById(R.id.picture_button).setVisibility(View.GONE);
 		}
 	}
 
@@ -247,7 +240,7 @@ public class ArduinoReceiveDataActivity extends Activity {
 	//
 	// Accessory methods
 	//
-	
+
 	private void setupAccessory() {
 		mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
 		mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
