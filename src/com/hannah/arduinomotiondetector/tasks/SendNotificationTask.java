@@ -37,7 +37,7 @@ public class SendNotificationTask extends AsyncTask<File, Void, Void> {
 			Log.e("SendMail", e.getMessage(), e);
 		}
 
-		sendSMS(mContext, NotificationPreferences.getPhone(mContext), "Alert at " + Calendar.getInstance().getTime());
+		sendSMS(mContext, NotificationPreferences.getPhone(mContext), "Arduino Motion Alert at " + Calendar.getInstance().getTime());
 
 		return null;
 	}

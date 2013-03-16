@@ -63,7 +63,6 @@ public class ArduinoReceiveDataActivity extends Activity {
 	// USB accessory variables
 	//
 	private static final String ACTION_USB_PERMISSION = "com.google.android.DemoKit.action.USB_PERMISSION";
-	private TextView mResponseField;
 	private UsbManager mUsbManager;
 	private PendingIntent mPermissionIntent;
 	private boolean mPermissionRequestPending;
@@ -112,29 +111,7 @@ public class ArduinoReceiveDataActivity extends Activity {
 		setUpCamera();
 		setUpMap();
 		setupAccessory();
-
-		mResponseField = (TextView) findViewById(R.id.arduinoresponse);
-		mHandler = new Handler() {
-			@Override
-			public void handleMessage(Message msg) {
-				ValueMsg t = (ValueMsg) msg.obj;
-
-				if (t.getReading() == 0) {
-					mResponseField.setText("ALERT! at " + (new Date().toString()));
-					mResponseField.setTextColor(Color.RED);
-
-					if (NotificationPreferences.getPhotoOn(ArduinoReceiveDataActivity.this)) {
-						CameraUtility.takePicture(camera, ArduinoReceiveDataActivity.this);
-					} else {
-						new SendNotificationTask(ArduinoReceiveDataActivity.this).execute();
-					}
-				} else {
-					mResponseField.setText("Status normal at " + (new Date().toString()));
-					mResponseField.setTextColor(Color.LTGRAY);
-				}
-			}
-		};
-		
+		setUpAccessoryHandler();
 	}
 
 	@Override
@@ -266,6 +243,34 @@ public class ArduinoReceiveDataActivity extends Activity {
 		} else {
 			Log.e(TAG, "failed to open accessory");
 		}
+	}
+
+	private void setUpAccessoryHandler() {
+		final TextView responseField = (TextView) findViewById(R.id.arduinoresponse);
+		final TextView timeField = (TextView) findViewById(R.id.time);
+
+		mHandler = new Handler() {
+			@Override
+			public void handleMessage(Message msg) {
+				ValueMsg t = (ValueMsg) msg.obj;
+
+				if (t.getReading() == 0) {
+					responseField.setText("ALERT!");
+					responseField.setTextColor(Color.RED);
+
+					if (NotificationPreferences.getPhotoOn(ArduinoReceiveDataActivity.this)) {
+						CameraUtility.takePicture(camera, ArduinoReceiveDataActivity.this);
+					} else {
+						new SendNotificationTask(ArduinoReceiveDataActivity.this).execute();
+					}
+				} else {
+					responseField.setText("Status Normal");
+					responseField.setTextColor(Color.LTGRAY);
+				}
+
+				timeField.setText(new Date().toString());
+			}
+		};
 	}
 
 	private void closeAccessory() {
