@@ -88,6 +88,19 @@
             android:layout_weight="1"
             android:text="Sound Alarm" />
     </LinearLayout>
+    
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Web IP" />
+
+    <EditText
+        android:id="@+id/ip_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="142.1.129.187"
+        android:inputType="text" />
 
     <Button
         android:id="@+id/save_button"

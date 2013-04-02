@@ -18,6 +18,7 @@ public class NotificationPreferences {
 	private static final String PHOTO_ON_PREF = "photo_on_pref";
 	private static final String SMS_ON_PREF = "sms_on_pref";
 	private static final String ALARM_ON_PREF = "alarm_on_pref";
+	private static final String IP_PREF = "ip_pref";
 
 	public static boolean hasPrefences(Context context) {
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -72,6 +73,13 @@ public class NotificationPreferences {
 		editor.putFloat(LONG_PREF, (float) location.longitude);
 		editor.commit();
 	}
+	
+	public static void saveIP(Context context, String IP) {
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+		Editor editor = preferences.edit();
+		editor.putString(IP_PREF, IP);
+		editor.commit();
+	}
 
 	public static String getSensorName(Context context) {
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -113,5 +121,12 @@ public class NotificationPreferences {
 		LatLng location = new LatLng(preferences.getFloat(LAT_PREF, 0), preferences.getFloat(LONG_PREF, 0));
 
 		return location;
+	}
+	
+	public static String getIP(Context context) {
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+		String IP = preferences.getString(IP_PREF, null);
+
+		return IP;
 	}
 }
