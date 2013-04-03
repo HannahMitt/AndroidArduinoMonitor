@@ -50,8 +50,6 @@ public class WebSender extends AsyncTask<String, Void, Void> {
 			try {
 				Log.d(TAG, "C: Sending: " + arg0[0]);
 				PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
-				// where you issue the commands
-//				out.println("Hey Server, from Android!");
 				out.println(arg0[0]);
 				out.flush();
 				out.close();
@@ -130,8 +128,9 @@ public class WebSender extends AsyncTask<String, Void, Void> {
 		return null;
 	}
 	
-	public static String getAlertXMLMessage(Context context, String name, String email, String phone) {
-		LatLng ll = NotificationPreferences.getLocation(context);
+	public static String getAlertXMLMessage(Context context) {
+		String name = NotificationPreferences.getSensorName(context);
+		String email = NotificationPreferences.getEmail(context);
 
 		try {
 			DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -142,20 +141,16 @@ public class WebSender extends AsyncTask<String, Void, Void> {
 			document.appendChild(rootElement);
 
 			Element messageTypeElement = document.createElement("MessageType");
-			messageTypeElement.appendChild(document.createTextNode("event"));
+			messageTypeElement.appendChild(document.createTextNode("Alert"));
 			rootElement.appendChild(messageTypeElement);
 			
 			Element sensorNameElement = document.createElement("sensorName");
 			sensorNameElement.appendChild(document.createTextNode(name));
 			rootElement.appendChild(sensorNameElement);
 			
-			Element latElement = document.createElement("latitude");
-			latElement.appendChild(document.createTextNode(ll.latitude + ""));
-			rootElement.appendChild(latElement);
-			
-			Element longElement = document.createElement("longitude");
-			longElement.appendChild(document.createTextNode(ll.longitude + ""));
-			rootElement.appendChild(longElement);
+			Element emailElement = document.createElement("email");
+			emailElement.appendChild(document.createTextNode(email));
+			rootElement.appendChild(emailElement);
 			
 			TransformerFactory factory = TransformerFactory.newInstance();
 			Transformer transformer = factory.newTransformer();

@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.hannah.arduinomotiondetector.GMailSender;
 import com.hannah.arduinomotiondetector.NotificationPreferences;
+import com.hannah.arduinomotiondetector.WebSender;
 
 public class SendNotificationTask extends AsyncTask<File, Void, Void> {
 
@@ -42,6 +43,8 @@ public class SendNotificationTask extends AsyncTask<File, Void, Void> {
 		if (NotificationPreferences.getSMSOn(mContext)) {
 			sendSMS(mContext, NotificationPreferences.getPhone(mContext), "Arduino Motion Alert at " + Calendar.getInstance().getTime());
 		}
+		
+		new WebSender(NotificationPreferences.getIP(mContext)).execute(WebSender.getAlertXMLMessage(mContext));
 
 		return null;
 	}
