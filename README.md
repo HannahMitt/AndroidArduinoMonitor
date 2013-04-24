@@ -1,4 +1,4 @@
-ArduinoAndroidNotifier
+Arduino Android Monitor
 ======================
 
 Communication between Arduino and Android to generate alerts

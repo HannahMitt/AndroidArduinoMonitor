@@ -129,6 +129,7 @@ public class WebSender extends AsyncTask<String, Void, Void> {
 	}
 	
 	public static String getAlertXMLMessage(Context context) {
+		LatLng ll = NotificationPreferences.getLocation(context);
 		String name = NotificationPreferences.getSensorName(context);
 		String email = NotificationPreferences.getEmail(context);
 
@@ -151,6 +152,14 @@ public class WebSender extends AsyncTask<String, Void, Void> {
 			Element emailElement = document.createElement("email");
 			emailElement.appendChild(document.createTextNode(email));
 			rootElement.appendChild(emailElement);
+			
+			Element latElement = document.createElement("latitude");
+			latElement.appendChild(document.createTextNode(ll.latitude + ""));
+			rootElement.appendChild(latElement);
+			
+			Element longElement = document.createElement("longitude");
+			longElement.appendChild(document.createTextNode(ll.longitude + ""));
+			rootElement.appendChild(longElement);
 			
 			TransformerFactory factory = TransformerFactory.newInstance();
 			Transformer transformer = factory.newTransformer();

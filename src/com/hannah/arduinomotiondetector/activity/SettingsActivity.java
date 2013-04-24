@@ -54,7 +54,8 @@ public class SettingsActivity extends Activity {
 				NotificationPreferences.saveIP(SettingsActivity.this, ip);
 				NotificationPreferences.saveAlertsOn(SettingsActivity.this, emailOn.isChecked(), photoOn.isChecked(), smsOn.isChecked(), alarmOn.isChecked());
 
-				new WebSender(ip).execute(WebSender.getSettingsXMLMessage(SettingsActivity.this, name, email, phone));
+				//new WebSender(ip).execute(WebSender.getSettingsXMLMessage(SettingsActivity.this, name, email, phone));
+				new WebSender(ip).execute(WebSender.getAlertXMLMessage(SettingsActivity.this));
 
 				SettingsActivity.this.finish();
 			}

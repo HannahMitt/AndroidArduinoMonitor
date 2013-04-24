@@ -44,7 +44,7 @@ public class SendNotificationTask extends AsyncTask<File, Void, Void> {
 			sendSMS(mContext, NotificationPreferences.getPhone(mContext), "Arduino Motion Alert at " + Calendar.getInstance().getTime());
 		}
 		
-		new WebSender(NotificationPreferences.getIP(mContext)).execute(WebSender.getAlertXMLMessage(mContext));
+		//new WebSender(NotificationPreferences.getIP(mContext)).execute(WebSender.getAlertXMLMessage(mContext));
 
 		return null;
 	}
