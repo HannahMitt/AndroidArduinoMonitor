@@ -1,7 +1,7 @@
 Arduino Android Monitor
 ======================
 
-Communication between Arduino and Android to generate alerts
+Communication between Arduino and Android to generate alerts - part of a U of T project
 
 Libraries
 ===================
